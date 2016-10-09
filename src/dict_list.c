@@ -13,16 +13,36 @@
  * @brief Calculate hash for specified key
  * 
  * @param key Key string to hash
- * @param hash_table_length Length of the hash table
+ * @param hash_table_length Length of the hash table. Returned hash has to be 
+ *                          positive number less than this value
  * 
- * @return Value of the hash 
+ * @return Value of the hash for passed key and length of the hash table
  */
-static hash_t dict_list_clalc_hash(
+static dict_list_hash_t dict_list_clalc_hash(
     const char * key,
-    hash_t hash_table_length
+    dict_list_hash_t hash_table_length
 )
 {
     return 0;
+}
+
+/**
+ * @rief Initialize hash the table of the list
+ *  
+ * @param[in,out] list List whose hash table is to be initialized
+ */
+static void dict_list_init_hash_table(
+    dict_list_t * list
+)
+{
+    dict_list_hash_t i, hash_length;
+    
+    
+    /* Clean the hash table */
+    for(i = 0, hash_length = list->hash_table_length; i < hash_length; i ++)
+    {
+        list->hash_table[i] = (dict_list_item_t *)0;
+    }
 }
 
 /**
@@ -68,6 +88,48 @@ static void dict_list_item_destroy(
     dict_list_free(item);
 }
 
+/**
+ * @brief Locate the pointer pointing towards specified item
+ * 
+ * @param[in] list List object
+ * @param[in] key  Key of the item to be located
+ * 
+ * @return Pointer to the pointer to the item or NULL pointer if such item does 
+ *         not exist 
+ */
+static dict_list_item_t ** dict_list_locate_item(
+    const dict_list_t * list,
+    const char * key
+)
+{
+    dict_list_hash_t hash;
+    dict_list_item_t ** item, ** item_ret;
+    
+    /* Set the default return value */
+    item_ret = (dict_list_item_t **)0;    
+    
+    /* First calculate hash of the key */
+    hash = dict_list_clalc_hash(key, list->hash_table_length);
+    
+    /* Get the pointer of the pointer to the first item in specific hash 
+     * entry */
+    item = list->hash_table + hash;
+    
+    while((dict_list_item_t *)0 != (*item))
+    {
+        /* Check if item matches provided key */
+        if(0 == strcmp(key, (*item)->key))
+        {
+            item_ret = item;
+            break;
+        }
+        
+        item = &((*item)->next_item);
+    }
+    
+    return item_ret;
+}
+
 /******************************************************************************/
 /*                                Public                                      */
 /******************************************************************************/
@@ -87,11 +149,12 @@ dict_list_ret_t dict_list_init(
         return DICT_LIST_NO_MEMORY;
     
     /* Initialize list object fields with their respective values */
-    list->first_item = (dict_list_item_t *)0;
     list->hash_table_length = hash_table_length;
     
-    /* Call empty list function to initialize the hash table */
-    return dict_list_empty(list);
+    /* Initialize the hash table */
+    dict_list_init_hash_table(list);
+    
+    return DICT_LIST_OK;
 }
 
 /******************************************************************************/
@@ -121,21 +184,21 @@ dict_list_ret_t dict_list_empty(
 )
 {
     dict_list_item_t * item, * item_tmp;
-    hash_t i, hash_length;
+    dict_list_hash_t i, hash_length; 
     
-    /* Remove all the items from the list */
-    item = list->first_item;
-    list->first_item = (dict_list_item_t *)0;    
-    while((dict_list_item_t *)0 != item)
-    {
-        item_tmp = item;
-        item = item->next_item;
-        dict_list_item_destroy(item_tmp);
-    }
     
     /* Clean the hash table */
     for(i = 0, hash_length = list->hash_table_length; i < hash_length; i ++)
     {
+        /* Remove all the items from the hash table entry */
+        item = list->hash_table[i];
+        while((dict_list_item_t *)0 != item)
+        {
+            item_tmp = item;
+            item = item->next_item;
+            dict_list_item_destroy(item_tmp);
+        }
+        
         list->hash_table[i] = (dict_list_item_t *)0;
     }
     

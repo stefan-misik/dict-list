@@ -14,10 +14,10 @@ typedef enum dict_list_ret
 
 
 /**
- * @brief type of a hash
+ * @brief Type of a hash
  * 
  */
-typedef int hash_t;
+typedef int dict_list_hash_t;
 
 /**
  * @brief Dictionary list item
@@ -35,9 +35,8 @@ typedef struct dict_list_item
  */
 typedef struct dict_list
 {
-    dict_list_item_t * first_item;   /** < First item of a list */
-    hash_t hash_table_length;        /** < Length of a hash table */
-    dict_list_item_t ** hash_table;  /** < Pointer to the hash table */
+    dict_list_hash_t hash_table_length; /** < Length of a hash table */
+    dict_list_item_t ** hash_table;     /** < Pointer to the hash table */
 } dict_list_t;
 
 
