@@ -4,17 +4,24 @@
 # Author: Stefan Misik (mail@stefanmisik.eu)
 
 # Define tools
-CC  = gcc
+CC = gcc
+AR = ar
 
 # Project properties
-OUT = libconfig_parse.so
+OUT = libconfig_parse.a
 SRC = dict_list.c
 
 # Flags
-CFLAGS   = -c -fpic
-LDFLAGS  = -shared
+CFLAGS   = -c
+LDFLAGS  =
 LDLIBS   = 
 ################################################################################
+
+# If shared library is being built
+ifeq ($(suffix $(OUT)),.so)
+	CFLAGS   += -fpic
+	LDFLAGS  += -shared
+endif
 
 # Debug flags
 ifeq ($(DBG),y)
@@ -34,8 +41,11 @@ all: $(OUT)
 # Pull in dependency info
 -include $(DEP)
 
-$(OUT): $(OBJ)
+$(basename $(OUT)).so: $(OBJ)
 	$(CC) $(LDFLAGS) $(OBJ) -o $@ $(LDLIBS)
+
+$(basename $(OUT)).a: $(OBJ)	
+	$(AR) rcs $@ $^
 
 %.o: %.c	
 	$(CC) $(CFLAGS) $< -o $@
@@ -44,7 +54,7 @@ $(OUT): $(OBJ)
 	$(CC) -MM $(CFLAGS) $< > $@
 
 clean:
-	$(RM) $(OUT) $(OBJ) $(DEP)
+	$(RM) $(basename $(OUT)).a $(basename $(OUT)).so $(OBJ) $(DEP)
 
 
 .PHONY: FORCE all clean

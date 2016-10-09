@@ -4,6 +4,9 @@
 # Dependecy files
 *.d
 
+# Static library
+*.a
+
 # Shared objects 
 *.so
 

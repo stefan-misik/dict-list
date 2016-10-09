@@ -12,7 +12,7 @@ SRC = main.c
 
 # Flags
 CFLAGS   = -c
-LDFLAGS  = -L../src/ -I../src/
+LDFLAGS  = -L../src/ -I../src/ -static
 LDLIBS   = -lconfig_parse
 ################################################################################
 
