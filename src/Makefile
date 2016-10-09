@@ -8,7 +8,7 @@ CC  = gcc
 
 # Project properties
 OUT = libconfig_parse.so
-SRC = hash_list.c
+SRC = dict_list.c
 
 # Flags
 CFLAGS   = -c -fpic
