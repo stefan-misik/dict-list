@@ -1,0 +1,14 @@
+# Object files
+*.o
+
+# Dependecy files
+*.d
+
+# Shared objects 
+*.so
+
+# Executables
+config_parse
+
+# Netbeans Project 
+nbproject/
