@@ -8,8 +8,10 @@
 typedef enum dict_list_ret 
 {
     DICT_LIST_OK = 0,       /** < Return ok */
-    DICT_LIST_NO_MEMORY     /** < Insufficeint memory to complete the
+    DICT_LIST_NO_MEMORY,    /** < Insufficeint memory to complete the
                              *    operation */
+    DICT_LIST_EXISTS,       /** < Requested key already exists */
+    DICT_LIST_NOT_FOUND     /** < Requested key does not exist */
 } dict_list_ret_t;
 
 
@@ -77,19 +79,43 @@ dict_list_ret_t dict_list_empty(
 /**
  * @brief Add an item into the list
  * 
- * @param[in] list Pointer to a list object
- * @param[in] key  Key of the new list item. This string is copied into the list
- *                 item
- * @param[in] data Data of the new list item. Only pointer is stored in list 
- *                 item
+ * @param[in,out]  list     Pointer to a list object
+ * @param[in]      key      Key of the new list item. This string is copied
+ *                          into the list item
+ * @param[in]      data     Data of the new list item. Only pointer is stored
+ *                          in list item
+ * @param[out]     old_data Pointer to memory which shall obtain old data
+ *                          listed under provided key, if any. Can be a NULL
+ *                          pointer. If provided key is not yet in the list,
+ *                          this parameter is used to initialize old_data 
+ *                          pointer with NULL
  * 
- * @return DICT_LIST_OK or DICT_LIST_NO_MEMORY
+ * @return DICT_LIST_OK, DICT_LIST_NO_MEMORY or DICT_LIST_EXISTS when provided 
+ *         key already exists and old_data pointer was not provided
  */
 dict_list_ret_t dict_list_add(
     dict_list_t * list,
     const char * key,
-    const void * data
+    void * data,
+    void ** old_data
 );
+
+/**
+ * @brief Try to find the provided key in the list and remove it from the list
+ * 
+ * @param[in,out] list     Pointer to a dictionary list object
+ * @param[in]     key      Key of the item to remove from the list
+ * @param[out]    old_data Pointer to memory which shall obtain data listed
+ *                         under provided key
+ * 
+ * @return DICT_LIST_OK or DICT_LIST_NOT_FOUND if key is not found in the list
+ */
+dict_list_ret_t dict_list_remove(
+    dict_list_t * list,
+    const char * key,
+    void ** old_data
+);
+        
 
 
 #endif /* _DICT_LIST_H */
