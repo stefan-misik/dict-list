@@ -101,7 +101,7 @@ static void dict_list_item_destroy(
  *         specified list item, or to next_item pointer, where such item can be
  *         added, if provided key does not exist in the dictionary list
  */
-static dict_list_item_t ** dict_list_locate_item(
+static dict_list_item_t ** dict_list_find_item(
     const dict_list_t * list,
     const char * key
 )
@@ -208,7 +208,7 @@ dict_list_ret_t dict_list_empty(
 }
 
 /******************************************************************************/
-dict_list_ret_t dict_list_add(
+dict_list_ret_t dict_list_set(
     dict_list_t * list,
     const char * key,
     void * data,
@@ -218,7 +218,7 @@ dict_list_ret_t dict_list_add(
     dict_list_item_t ** next_item, * new_item;
     
     /* Find the item in the list */
-    next_item = dict_list_locate_item(list, key);
+    next_item = dict_list_find_item(list, key);
     
     if((dict_list_item_t *)0 == (*next_item))
     {
@@ -255,7 +255,7 @@ dict_list_ret_t dict_list_add(
 }
 
 /******************************************************************************/
-dict_list_ret_t dict_list_remove(
+dict_list_ret_t dict_list_unset(
     dict_list_t * list,
     const char * key,
     void ** old_data
@@ -264,8 +264,9 @@ dict_list_ret_t dict_list_remove(
     dict_list_item_t ** next_item, * item;
     
     /* Find the item in the list */
-    next_item = dict_list_locate_item(list, key);
+    next_item = dict_list_find_item(list, key);
     
+    /* Check if key was found */
     if((dict_list_item_t *)0 == (*next_item))
     {
         *old_data = (void *)0;
@@ -283,6 +284,28 @@ dict_list_ret_t dict_list_remove(
     
     /* Destroy the item */
     dict_list_item_destroy(item);
+    
+    return DICT_LIST_OK;
+}
+
+/******************************************************************************/
+dict_list_ret_t dict_list_get(
+    dict_list_t * list,
+    const char * key,
+    void ** data
+)
+{
+    dict_list_item_t ** next_item;
+    
+    /* Find the item in the list */
+    next_item = dict_list_find_item(list, key);
+    
+    /* Check if key was found */
+    if((dict_list_item_t *)0 == (*next_item))
+        return DICT_LIST_NOT_FOUND;
+    
+    /* Return the data from the item */
+    *data = (*next_item)->data;
     
     return DICT_LIST_OK;
 }

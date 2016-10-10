@@ -77,7 +77,7 @@ dict_list_ret_t dict_list_empty(
 );
 
 /**
- * @brief Add an item into the list
+ * @brief Add or replsce an item in the dictionary list
  * 
  * @param[in,out]  list     Pointer to a list object
  * @param[in]      key      Key of the new list item. This string is copied
@@ -93,7 +93,7 @@ dict_list_ret_t dict_list_empty(
  * @return DICT_LIST_OK, DICT_LIST_NO_MEMORY or DICT_LIST_EXISTS when provided 
  *         key already exists and old_data pointer was not provided
  */
-dict_list_ret_t dict_list_add(
+dict_list_ret_t dict_list_set(
     dict_list_t * list,
     const char * key,
     void * data,
@@ -110,12 +110,26 @@ dict_list_ret_t dict_list_add(
  * 
  * @return DICT_LIST_OK or DICT_LIST_NOT_FOUND if key is not found in the list
  */
-dict_list_ret_t dict_list_remove(
+dict_list_ret_t dict_list_unset(
     dict_list_t * list,
     const char * key,
     void ** old_data
 );
-        
+
+/**
+ * @brief Try to find the provided key in the list and return its data
+ * 
+ * @param[in,out] list Pointer to a dictionary list object
+ * @param[in]     key  Key of the item whose data is to be obtained
+ * @param[out]    data Pointer to memory which shall obtain data listed under
+ *                     provided key
+ * @return 
+ */
+dict_list_ret_t dict_list_get(
+    dict_list_t * list,
+    const char * key,
+    void ** data
+);
 
 
 #endif /* _DICT_LIST_H */
