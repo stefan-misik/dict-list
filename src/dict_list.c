@@ -12,18 +12,24 @@
 /**
  * @brief Calculate hash for specified key
  * 
- * @param key Key string to hash
- * @param hash_table_length Length of the hash table. Returned hash has to be 
- *                          positive number less than this value
+ * @param key Key string to hash 
  * 
- * @return Value of the hash for passed key and length of the hash table
+ * @return Value of the hash for passed key
+ * 
+ * @todo Implement better hashing function. This one might not use the hash 
+ *       table efficiently for large hash table and short keys.
  */
 static dict_list_hash_t dict_list_clalc_hash(
-    const char * key,
-    dict_list_hash_t hash_table_length
+    const char * key
 )
 {
-    return 0;
+    dict_list_hash_t hash = 0;
+    
+    /* Sum characters of the string */
+    while('\0' != *key)
+        hash += *(key++);
+    
+    return hash;
 }
 
 /**
@@ -111,7 +117,10 @@ static dict_list_item_t ** dict_list_find_item(
     
       
     /* First calculate hash of the key */
-    hash = dict_list_clalc_hash(key, list->hash_table_length);
+    hash = dict_list_clalc_hash(key);
+    
+    /* Limit the hash according the hash table length */
+    hash %= list->hash_table_length;
     
     /* Get the pointer of the pointer to the first item in specific hash 
      * entry */
