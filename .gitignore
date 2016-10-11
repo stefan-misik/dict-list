@@ -12,6 +12,7 @@
 
 # Executables
 config_parse
+*.exe
 
 # Netbeans Project 
 nbproject/
