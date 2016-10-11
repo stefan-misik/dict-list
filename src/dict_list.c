@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #define dict_list_malloc(size) malloc(size)
 #define dict_list_free(ptr) free(ptr)
 
@@ -47,7 +48,7 @@ static void dict_list_init_hash_table(
     /* Clean the hash table */
     for(i = 0, hash_length = list->hash_table_length; i < hash_length; i ++)
     {
-        list->hash_table[i] = (dict_list_item_t *)0;
+        list->hash_table[i] = NULL;
     }
 }
 
@@ -70,7 +71,7 @@ static dict_list_item_t * dict_list_item_create(
     /* Allocate new dictionary list item */
     new_item = (dict_list_item_t *)dict_list_malloc(sizeof(dict_list_item_t) +
             (key_buffer_length * sizeof(char)));
-    if((dict_list_item_t *)0 == new_item)
+    if(NULL == new_item)
         return new_item;
     
     /* Set key pointer */
@@ -80,7 +81,7 @@ static dict_list_item_t * dict_list_item_create(
     memcpy(new_item->key, key, key_buffer_length);
     
     /* Clean the next_item */
-    new_item->next_item = (dict_list_item_t *)0;
+    new_item->next_item = NULL;
         
     return new_item;
 }
@@ -127,7 +128,7 @@ static dict_list_item_t ** dict_list_find_item(
     item = list->hash_table + hash;
     
     /* Look for the item in the linked list */
-    while((dict_list_item_t *)0 != (*item))
+    while(NULL != (*item))
     {
         /* Check if item matches provided key */
         if(0 == strcmp(key, (*item)->key))
@@ -156,7 +157,7 @@ dict_list_ret_t dict_list_init(
         sizeof(dict_list_item_t *) * hash_table_length);
     
     /* Check allocated memory */
-    if((dict_list_item_t **)0 == list->hash_table)
+    if(NULL == list->hash_table)
         return DICT_LIST_NO_MEMORY;
     
     /* Initialize list object fields with their respective values */
@@ -184,7 +185,7 @@ dict_list_ret_t dict_list_deinit(
     
     /* Free hash table */
     dict_list_free(list->hash_table);
-    list->hash_table = (dict_list_item_t **)0;
+    list->hash_table = NULL;
     
     return DICT_LIST_OK;
 }
@@ -203,14 +204,14 @@ dict_list_ret_t dict_list_empty(
     {
         /* Remove all the items from the hash table entry */
         item = list->hash_table[i];
-        while((dict_list_item_t *)0 != item)
+        while(NULL != item)
         {
             item_tmp = item;
             item = item->next_item;
             dict_list_item_destroy(item_tmp);
         }
         
-        list->hash_table[i] = (dict_list_item_t *)0;
+        list->hash_table[i] = NULL;
     }
     
     return DICT_LIST_OK;
@@ -229,12 +230,12 @@ dict_list_ret_t dict_list_set(
     /* Find the item in the list */
     next_item = dict_list_find_item(list, key);
     
-    if((dict_list_item_t *)0 == (*next_item))
+    if(NULL == (*next_item))
     {
         /* Create new item */
         new_item = dict_list_item_create(key);
         /* Check whether new item was allocated correctly */
-        if((dict_list_item_t *)0 == new_item)
+        if(NULL == new_item)
             return DICT_LIST_NO_MEMORY;
         
         /* Insert new item into a linked list */
@@ -242,13 +243,13 @@ dict_list_ret_t dict_list_set(
         
         /* If if there is pointer to store the old data, store NULL pointer
          * into it */
-        if((void **)0 != old_data)
-            *old_data = (dict_list_item_t *)0;
+        if(NULL != old_data)
+            *old_data = NULL;
     }
     else
     {
         /* If if there is no pointer to store the old data */
-        if((void **)0 == old_data)
+        if(NULL == old_data)
             return DICT_LIST_EXISTS;
         
         new_item = *next_item;
@@ -276,9 +277,9 @@ dict_list_ret_t dict_list_unset(
     next_item = dict_list_find_item(list, key);
     
     /* Check if key was found */
-    if((dict_list_item_t *)0 == (*next_item))
+    if(NULL == (*next_item))
     {
-        *old_data = (void *)0;
+        *old_data = NULL;
         return DICT_LIST_NOT_FOUND;
     }
     
@@ -310,7 +311,7 @@ dict_list_ret_t dict_list_get(
     next_item = dict_list_find_item(list, key);
     
     /* Check if key was found */
-    if((dict_list_item_t *)0 == (*next_item))
+    if(NULL == (*next_item))
         return DICT_LIST_NOT_FOUND;
     
     /* Return the data from the item */
