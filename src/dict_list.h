@@ -1,6 +1,7 @@
 #ifndef _DICT_LIST_H
 #define _DICT_LIST_H
 
+#include <stddef.h>
 
 /**
  * @brief Return value of dict_list functions
