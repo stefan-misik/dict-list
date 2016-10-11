@@ -4,16 +4,19 @@
 # Author: Stefan Misik (mail@stefanmisik.eu)
 
 # Define tools
-CC  = gcc
+CC  = i686-w64-mingw32-gcc
+TEST_ENV = unit_test.o
 
 # Project properties
-OUT = config_parse
-SRC = main.c
+OUT_PREFIX = test_
+TESTS      = dict_list
+DIR        = tests/
+TESTED     = ../src/
 
 # Flags
 CFLAGS   = -c
-LDFLAGS  = -L../src/ -I../src/ -static
-LDLIBS   = -lconfig_parse
+LDFLAGS  = 
+LDLIBS   = 
 ################################################################################
 
 # Debug flags
@@ -22,29 +25,24 @@ ifeq ($(DBG),y)
 	LDFLAGS  += -ggdb
 endif
 
-# Object files
-OBJ := $(addsuffix .o,$(basename $(SRC))) $(RES:.rc=.o)
-	
-# Dependencies
-DEP := $(addsuffix .d,$(basename $(SRC)))
+# Test executables
+TEST_OUT = $(addprefix $(OUT_PREFIX),$(TESTS)) 
+
 ################################################################################
 
-all: $(OUT)
+all: $(TEST_OUT)
 
-# Pull in dependency info
--include $(DEP)
-
-$(OUT): $(OBJ)
+$(OUT_PREFIX)%:: $(DIR)%.o $(TESTED)%.o
 	$(CC) $(LDFLAGS) $(OBJ) -o $@ $(LDLIBS)
+
+$(TESTED)%.o: $(TESTED)%.c
+	$(MAKE) -C $(TESTED) $(notdir $@)
 
 %.o: %.c	
 	$(CC) $(CFLAGS) $< -o $@
-	
-%.d: %.c
-	$(CC) -MM $(CFLAGS) $< > $@
 
 clean:
-	$(RM) $(OUT) $(OBJ) $(DEP)
+	$(RM) $(TEST_OUT) $(TEST_ENV)
 
 
 .PHONY: FORCE all clean
