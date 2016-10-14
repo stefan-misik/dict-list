@@ -1,6 +1,7 @@
 #include "unit_test.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define UNIT_TEST_RESULT_LENGTH 4
 
@@ -111,6 +112,7 @@ int main(
         "Test finished. Results: %i case(s) passed, %i case(s) failed\n", 
         passed, failed);
     
-        
-    return 0;
+    
+    /* Set the exit code accordingly */
+    return failed == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
