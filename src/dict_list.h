@@ -47,12 +47,13 @@ typedef struct dict_list
  * @brief Initialize the dictionary list
  * 
  * @param[out] list Pointer to a list object to be initialized
+ * @param      hash_table_length Length of the hash table
  * 
  * @return DICT_LIST_OK or DICT_LIST_NO_MEMORY
  */
 dict_list_ret_t dict_list_init(
     dict_list_t * list,
-    int hash_table_length
+    dict_list_hash_t hash_table_length
 );
 
 /**

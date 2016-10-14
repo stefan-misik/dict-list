@@ -149,7 +149,7 @@ static dict_list_item_t ** dict_list_find_item(
 /******************************************************************************/
 dict_list_ret_t dict_list_init(
     dict_list_t * list,
-    int hash_table_length
+    dict_list_hash_t hash_table_length
 )
 {
     /* Allocate hash table */
