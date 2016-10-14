@@ -25,20 +25,23 @@ extern unit_test_case_t * unit_test_case_list[];
  * @brief Macro to create test function and its structure
  * 
  */
-#define UNIT_TEST_CASE(name)                   \
-    static void name ## _fcn(                  \
-        unit_test_case_t * this_test_case      \
-    );                                         \
-    unit_test_case_t unit_test_case_ ## name = \
-    {                                          \
-        .name = #name,                         \
-        .tests_passed = 0,                     \
-        .tests_failed = 0,                     \
-        .test_fcn = name ## _fcn               \
-    };                                         \
-    static void name ## _fcn(                  \
-        testbench_test_t * this_test_case      \
-    )                                               
+#define UNIT_TEST_CASE(case_name)                   \
+    static void case_name ## _fcn(                  \
+        unit_test_case_t * this_test_case           \
+    );                                              \
+    unit_test_case_t unit_test_case_ ## case_name = \
+    {                                               \
+        .name = #case_name,                         \
+        .tests_passed = 0,                          \
+        .tests_failed = 0,                          \
+        .test_fcn = case_name ## _fcn               \
+    };                                              \
+    static void case_name ## _fcn(                  \
+        unit_test_case_t * this_test_case           \
+    )
+
+#define UNIT_TEST_CASE_ENTRY(case_name)             \
+    &unit_test_case_ ## case_name
 
 /**
  * @brief Compare two numbers

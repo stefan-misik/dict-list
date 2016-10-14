@@ -5,13 +5,15 @@
 
 # Define tools
 CC  = i686-w64-mingw32-gcc
-TEST_ENV = unit_test.o
 
-# Project properties
+# List of tests
+TESTS:= $(shell cat test.list)
+
+# Test environment setup
 OUT_PREFIX = test_
-TESTS      = dict_list
 DIR        = tests/
 TESTED     = ../src/
+TEST_ENV   = unit_test.o
 
 # Flags
 CFLAGS   = -c
@@ -26,14 +28,18 @@ ifeq ($(DBG),y)
 endif
 
 # Test executables
-TEST_OUT = $(addprefix $(OUT_PREFIX),$(TESTS)) 
+TEST_OUT = $(addprefix $(OUT_PREFIX),$(TESTS))
+
+# Files to clean-up
+CLEAN_FILES = $(TEST_OUT) $(TEST_ENV)      \
+	      $(addsuffix .o, $(addprefix $(TESTED), $(TESTS)))
 
 ################################################################################
 
 all: $(TEST_OUT)
 
-$(OUT_PREFIX)%:: $(DIR)%.o $(TESTED)%.o
-	$(CC) $(LDFLAGS) $(OBJ) -o $@ $(LDLIBS)
+$(addprefix $(OUT_PREFIX), $(TESTS)): $(OUT_PREFIX)%: $(DIR)%.o $(TESTED)%.o $(TEST_ENV)
+	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 $(TESTED)%.o: $(TESTED)%.c
 	$(MAKE) -C $(TESTED) $(notdir $@)
@@ -42,9 +48,10 @@ $(TESTED)%.o: $(TESTED)%.c
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	$(RM) $(TEST_OUT) $(TEST_ENV)
+	$(RM) $(CLEAN_FILES)
 
+$(TESTS): %: $(OUT_PREFIX)%
 
-.PHONY: FORCE all clean
+.PHONY: FORCE all clean $(TESTS)
 
 FORCE:

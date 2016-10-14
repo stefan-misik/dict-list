@@ -23,7 +23,7 @@ static const char * g_separator = "********************************************"
  * @brief Output stream
  * 
  */
-static FILE * test_output;
+static FILE * g_test_output;
 
 
 /******************************************************************************/
@@ -36,24 +36,24 @@ void unit_test_result(
     int spaces;
     
     /* Print test name */
-    fprintf(test_output, "%s", test_name);
+    fprintf(g_test_output, "%s", test_name);
     
     /* Print separators */
     spaces = UNIT_TEST_CONSOLE_WIDTH - UNIT_TEST_RESULT_LENGTH
             - strlen(test_name);
     for(; spaces > 0; spaces --)
     {
-        putc(' ', test_output);
+        putc(' ', g_test_output);
     }
     
     if(result)
     {
-        fprintf(test_output, "%s", g_results[1]);
+        fprintf(g_test_output, "%s\n", g_results[1]);
         this_test_case->tests_passed ++;
     }
     else
     {
-        fprintf(test_output, "%s", g_results[0]);
+        fprintf(g_test_output, "%s\n", g_results[0]);
         this_test_case->tests_failed ++;
     }        
 }
@@ -64,27 +64,53 @@ int main(
     char** argv
 )
 {
-    unit_test_case_t ** pos = unit_test_case_list;
+    unit_test_case_t ** test_case = unit_test_case_list;
     unsigned passed, failed;
     passed = 0;
     failed = 0;
     
-    test_output = stdout;
+    g_test_output = stdout;
     
     
     /* Iterate through all the tests */
-    while(NULL != (*pos))
+    while(NULL != (*test_case))
     {
+        /* Print separators and test case name */
+        fprintf(g_test_output, "\n%s\n", g_separator);
+        fprintf(g_test_output, "Test case: %s\n", (*test_case)->name);
+        fprintf(g_test_output, "%s\n", g_separator);
+        
+        /* Zero the test counters */
+        (*test_case)->tests_failed = 0;
+        (*test_case)->tests_passed = 0;
+        
         /* Perform test */
-        (*pos)->test_fcn(*pos);              
+        (*test_case)->test_fcn(*test_case);
+        
+        /* Print test case results */
+        fprintf(g_test_output, "%s\n", g_separator);
+        fprintf(g_test_output, 
+            "'%s' results: %i passed, %i failed\n", 
+            (*test_case)->name, 
+            (*test_case)->tests_passed, (*test_case)->tests_failed);
+        //fprintf(g_test_output, "%s\n", g_separator);
 
         /* Count results */
-        passed += (*pos)->tests_passed;
-        failed += (*pos)->tests_failed;        
+        if(0 == (*test_case)->tests_failed)
+            passed ++;
+        else
+            failed ++;        
 
-        /* Move to another test */
-        pos ++;
-    }    
+        /* Move to another test case */
+        test_case ++;
+    }
+    
+    /* Print overall results */
+    fprintf(g_test_output, "\n\n%s\n", g_separator);
+    fprintf(g_test_output, 
+        "Test finished. Results: %i case(s) passed, %i case(s) failed\n", 
+        passed, failed);
+    
         
     return 0;
 }

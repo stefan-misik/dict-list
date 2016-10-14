@@ -4,7 +4,7 @@
 # Author: Stefan Misik (mail@stefanmisik.eu)
 
 # Define tools
-CC = gcc
+CC = i686-w64-mingw32-gcc
 AR = ar
 
 # Project properties
