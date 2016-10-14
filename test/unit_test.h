@@ -39,9 +39,14 @@ extern unit_test_case_t * unit_test_case_list[];
     static void case_name ## _fcn(                  \
         unit_test_case_t * this_test_case           \
     )
+#define UNIT_TEST_CASE_LIST_BEGIN                   \
+    unit_test_case_t * unit_test_case_list[] = {
 
 #define UNIT_TEST_CASE_ENTRY(case_name)             \
-    &unit_test_case_ ## case_name
+        &unit_test_case_ ## case_name ,
+
+#define UNIT_TEST_CASE_LIST_END                     \
+    NULL};
 
 /**
  * @brief Compare two numbers

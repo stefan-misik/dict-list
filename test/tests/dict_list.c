@@ -115,10 +115,8 @@ UNIT_TEST_CASE(dict_list_empty)
 /*
  * List of test cases 
  */
-unit_test_case_t * unit_test_case_list[] = 
-{
-    UNIT_TEST_CASE_ENTRY(dict_list_init),
-    UNIT_TEST_CASE_ENTRY(dict_list_deinit),
-    UNIT_TEST_CASE_ENTRY(dict_list_empty),
-    NULL
-};
+UNIT_TEST_CASE_LIST_BEGIN
+    UNIT_TEST_CASE_ENTRY(dict_list_init)
+    UNIT_TEST_CASE_ENTRY(dict_list_deinit)
+    UNIT_TEST_CASE_ENTRY(dict_list_empty)
+UNIT_TEST_CASE_LIST_END
